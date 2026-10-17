@@ -51,6 +51,21 @@
       .card h3 { margin: 0 0 8px; font-size: 1.12rem; }
       .card p { margin: 0; color: var(--muted); font-size: .94rem; }
       .card span { display: inline-block; margin-bottom: 15px; color: var(--blue); font-size: 1.35rem; }
+      .topics { display: grid; gap: 16px; }
+      details { overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: var(--card); box-shadow: var(--shadow); }
+      summary { cursor: pointer; padding: 21px 24px; color: var(--ink); font-weight: 800; list-style: none; }
+      summary::-webkit-details-marker { display: none; }
+      summary::after { float: right; color: var(--blue); content: "+"; font-size: 1.3rem; line-height: 1; }
+      details[open] summary::after { content: "−"; }
+      .answers { padding: 0 24px 22px; border-top: 1px solid var(--line); }
+      .qa { padding: 17px 0; border-bottom: 1px solid var(--line); }
+      .qa:last-child { border-bottom: 0; padding-bottom: 0; }
+      .qa h3 { margin: 0 0 7px; font-size: .98rem; }
+      .qa p { margin: 0; color: var(--muted); font-size: .92rem; }
+      .qa pre { overflow-x: auto; margin: 11px 0 0; padding: 12px 14px; border-radius: 9px; color: #dbeafe; background: #111827; font: .8rem/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .index { display: grid; grid-template-columns: repeat(5, 1fr); gap: 9px; margin-bottom: 28px; }
+      .index a { padding: 11px 8px; border: 1px solid var(--line); border-radius: 9px; color: var(--muted); background: var(--card); text-align: center; text-decoration: none; font-size: .8rem; }
+      .index a:hover { color: var(--blue); border-color: #c7d2fe; }
       .review { margin-top: 42px; padding: 23px 26px; border-left: 3px solid #60a5fa; border-radius: 0 12px 12px 0; background: #fff; color: var(--muted); }
       .review strong { color: var(--ink); }
       footer { padding: 26px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: .88rem; }
@@ -59,6 +74,7 @@
         header { padding-bottom: 60px; }
         .hero { padding-top: 52px; }
         .grid { grid-template-columns: 1fr; }
+        .index { grid-template-columns: repeat(2, 1fr); }
       }
     </style>
   </head>
@@ -85,17 +101,57 @@
         <strong>How to use this section</strong>
         This week's questions stay within topics already taught, while the bank expands as the course progresses. Review the fundamentals first, then connect each topic to the layers around it.
       </div>
-
-      <div class="grid">
-        <article class="card"><span>JS</span><h3>JavaScript</h3><p>Language fundamentals, asynchronous behavior, APIs, and modern syntax.</p></article>
-        <article class="card"><span>⚛</span><h3>React</h3><p>Components, state, effects, forms, rendering, and application structure.</p></article>
-        <article class="card"><span>◉</span><h3>Node.js</h3><p>Runtime concepts, modules, asynchronous I/O, and server-side JavaScript.</p></article>
-        <article class="card"><span>↔</span><h3>Express</h3><p>Routing, middleware, error handling, and building maintainable servers.</p></article>
-        <article class="card"><span>API</span><h3>REST APIs</h3><p>Resource design, HTTP methods, status codes, validation, and integration.</p></article>
-        <article class="card"><span>DB</span><h3>MongoDB / Mongoose</h3><p>Documents, schemas, models, queries, relationships, and data validation.</p></article>
-        <article class="card"><span>🔐</span><h3>Authentication &amp; Authorization</h3><p>Identity, sessions or tokens, protected routes, roles, and permissions.</p></article>
-        <article class="card"><span>IMG</span><h3>ImageKit</h3><p>Image uploads, delivery, transformations, and media handling workflows.</p></article>
-        <article class="card"><span>TS</span><h3>TypeScript &amp; Next.js</h3><p>Added once taught, alongside future full-stack topics and patterns.</p></article>
+      <nav class="index" aria-label="Interview sections">
+        <a href="#javascript">01 · JavaScript</a>
+        <a href="#react">02 · React</a>
+        <a href="#rest">03 · REST + Express</a>
+        <a href="#mongodb">04 · MongoDB</a>
+        <a href="#auth">05 · Auth + ImageKit</a>
+      </nav>
+      <div class="topics">
+        <details id="javascript" open>
+          <summary>#1 JavaScript — Async Flow</summary>
+          <div class="answers">
+            <article class="qa"><h3>How does the event loop determine execution order?</h3><p>Synchronous code runs first. The event loop then processes microtasks, such as Promise callbacks, before moving to macrotasks, such as <code>setTimeout()</code> callbacks. Fetch responses are handled asynchronously, so their order depends on when they arrive.</p></article>
+            <article class="qa"><h3>What is the difference between a microtask and a macrotask?</h3><p>Microtasks include Promise callbacks, while macrotasks include <code>setTimeout()</code> and <code>setInterval()</code> callbacks. Microtasks run before the next macrotask.</p></article>
+            <article class="qa"><h3>Why can blocking synchronous JavaScript freeze the UI?</h3><p>Blocking code must finish before JavaScript can handle user clicks or UI updates, so the page feels unresponsive until the work completes.</p></article>
+          </div>
+        </details>
+        <details id="react">
+          <summary>#2 React — Unnecessary Re-renders</summary>
+          <div class="answers">
+            <article class="qa"><h3>How would you investigate and reduce unnecessary re-renders?</h3><p>Use the React DevTools Profiler to identify re-rendering components, then optimize only the components causing a measurable performance issue.</p></article>
+            <article class="qa"><h3>When would React.memo help?</h3><p>Use <code>React.memo</code> when a child frequently receives the same props and does not need to re-render.</p></article>
+            <article class="qa"><h3>What do useMemo and useCallback solve?</h3><p><code>useMemo</code> caches a calculated value, while <code>useCallback</code> caches a function reference. Avoid memoizing everywhere because it adds complexity and has its own cost.</p></article>
+          </div>
+        </details>
+        <details id="rest">
+          <summary>#3 REST API + Express — Request Flow</summary>
+          <div class="answers">
+            <article class="qa"><h3>How would you debug a 401 error?</h3><p>Check that the frontend sends the authentication token, then verify that the backend receives and validates it. Use the browser Network tab and backend logs to find missing, expired, or invalid tokens.</p></article>
+            <article class="qa"><h3>Where should authentication middleware run?</h3><p>It should run before the controller so the request is authenticated before business logic executes.</p><pre><code>app.get("/api/profile", authMiddleware, profileController);</code></pre></article>
+            <article class="qa"><h3>What is the difference between 401 and 403?</h3><p><strong>401 Unauthorized</strong> means the user is not properly authenticated. <strong>403 Forbidden</strong> means the user is authenticated but does not have permission to access the resource.</p></article>
+          </div>
+        </details>
+        <details id="mongodb">
+          <summary>#4 MongoDB + Mongoose — Duplicate Data</summary>
+          <div class="answers">
+            <article class="qa"><h3>How would you prevent duplicate registrations?</h3><p>Check whether the email exists, and create a unique index so MongoDB enforces uniqueness even when requests arrive at the same time.</p><pre><code>userSchema.index({ email: 1 }, { unique: true });</code></pre></article>
+            <article class="qa"><h3>Is application-level checking alone sufficient?</h3><p>No. Two requests can both check that an email is available before either inserts it. This race condition requires database-level protection.</p></article>
+            <article class="qa"><h3>How should the API respond to a duplicate-key error?</h3><p>Catch MongoDB's <code>E11000</code> error and return HTTP <code>409 Conflict</code> with a clear message.</p><pre><code>res.status(409).json({ message: "Email is already registered" });</code></pre></article>
+          </div>
+        </details>
+        <details id="auth">
+          <summary>#5 Authentication + Authorization + ImageKit</summary>
+          <div class="answers">
+            <article class="qa"><h3>What checks should happen before granting access?</h3><p>Verify the student's token with authentication middleware, then check that the requested resource belongs to that student. For uploads, also validate file type, size, and upload permissions.</p></article>
+            <article class="qa"><h3>What information should the server trust?</h3><p>Do not blindly trust user IDs, roles, or permissions from the client. Use the verified token and trusted server-side data to determine identity and permissions.</p></article>
+            <article class="qa"><h3>How do you prevent changing an ID in the URL?</h3><p>Compare the resource owner ID with the authenticated user's ID from the verified token.</p><pre><code>if (resource.userId.toString() !== req.user.id) {
+  return res.status(403).json({ message: "Access denied" });
+}</code></pre></article>
+            <article class="qa"><h3>Where does ImageKit fit into the upload flow?</h3><p>ImageKit stores and delivers files. The backend verifies identity and upload permissions, provides authorized credentials or handles the upload securely, and prevents users from overwriting or accessing another user's private files.</p></article>
+          </div>
+        </details>
       </div>
 
       <div class="review"><strong>Study rhythm:</strong> prepare this week's taught topics, explain the trade-offs out loud, and revisit older topics whenever a new feature connects them.</div>

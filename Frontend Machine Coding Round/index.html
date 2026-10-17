@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Interview Practice Tracker built for the Frontend Machine Coding Round." />
+    <title>Interview Practice Tracker</title>
+    <style>
+      :root {
+        --ink: #172033; --muted: #748097; --paper: #f5f7fb; --card: #fff;
+        --line: #e5eaf2; --blue: #4f46e5; --blue-soft: #eef2ff; --green: #059669;
+        --orange: #ea580c; --red: #dc2626; --shadow: 0 12px 34px rgba(30, 41, 77, .07);
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; color: var(--ink); background: var(--paper); font: 15px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      button, input, select { font: inherit; }
+      button { cursor: pointer; }
+      .shell { width: min(1180px, calc(100% - 40px)); margin: auto; }
+      header { padding: 23px 0 66px; color: #fff; background: radial-gradient(circle at 88% 0, rgba(129, 140, 248, .5), transparent 31%), linear-gradient(135deg, #151b35, #37328c); }
+      nav { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+      .brand { font-weight: 800; letter-spacing: -.02em; }
+      .brand b { color: #a5b4fc; }
+      nav a { color: #dbeafe; text-decoration: none; font-size: .88rem; }
+      .hero { display: flex; justify-content: space-between; align-items: end; gap: 35px; padding-top: 55px; }
+      .eyebrow { margin: 0 0 10px; color: #c7d2fe; font-size: .75rem; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+      h1, h2, h3 { line-height: 1.15; letter-spacing: -.035em; }
+      h1 { margin: 0 0 10px; font-size: clamp(2.3rem, 5vw, 4rem); }
+      .hero p { max-width: 575px; margin: 0; color: #d8dcf5; font-size: 1.05rem; }
+      .round-tag { padding: 10px 14px; border: 1px solid rgba(255,255,255,.22); border-radius: 12px; color: #e0e7ff; white-space: nowrap; font-size: .85rem; }
+      main { padding: 38px 0 75px; }
+      .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: -74px; position: relative; }
+      .stat { padding: 20px; border: 1px solid var(--line); border-radius: 15px; background: var(--card); box-shadow: var(--shadow); }
+      .stat-label { color: var(--muted); font-size: .82rem; }
+      .stat-value { display: block; margin-top: 4px; font-size: 1.8rem; font-weight: 800; letter-spacing: -.05em; }
+      .stat-value small { margin-left: 3px; color: var(--muted); font-size: .85rem; font-weight: 500; letter-spacing: 0; }
+      .progress-track { height: 7px; margin-top: 9px; overflow: hidden; border-radius: 9px; background: #e5e7eb; }
+      .progress-bar { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #6366f1, #8b5cf6); transition: width .3s ease; }
+      .workspace { display: grid; grid-template-columns: 1fr 335px; gap: 24px; margin-top: 28px; }
+      .panel { padding: 24px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); box-shadow: var(--shadow); }
+      .panel-heading { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 20px; }
+      h2 { margin: 0; font-size: 1.35rem; }
+      h3 { margin: 0; font-size: 1rem; }
+      .muted { color: var(--muted); font-size: .88rem; }
+      .filters { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 9px; margin-bottom: 18px; }
+      input, select { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; outline: none; color: var(--ink); background: #fff; }
+      input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(79, 70, 229, .11); }
+      .question-list { display: grid; gap: 10px; }
+      .question { display: grid; grid-template-columns: 1fr auto; gap: 13px; align-items: center; padding: 15px; border: 1px solid var(--line); border-radius: 12px; }
+      .question-title { margin: 0 0 7px; font-weight: 700; }
+      .question-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; color: var(--muted); font-size: .78rem; }
+      .chip { padding: 3px 8px; border-radius: 999px; background: #f1f5f9; }
+      .chip.category { color: #4338ca; background: var(--blue-soft); }
+      .chip.completed { color: #047857; background: #ecfdf5; }
+      .chip.progress { color: #c2410c; background: #fff7ed; }
+      .question-actions { display: flex; gap: 7px; align-items: center; }
+      .status-select { min-width: 115px; padding: 7px 8px; font-size: .8rem; }
+      .icon-button { width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); background: #fff; }
+      .icon-button:hover { color: var(--red); border-color: #fecaca; background: #fff1f2; }
+      .empty { padding: 35px 15px; text-align: center; color: var(--muted); }
+      .empty strong { display: block; margin-bottom: 4px; color: var(--ink); }
+      .form-grid { display: grid; gap: 13px; }
+      label { display: grid; gap: 5px; color: #475569; font-size: .82rem; font-weight: 700; }
+      .error { min-height: 18px; color: var(--red); font-size: .78rem; }
+      .primary { width: 100%; padding: 11px 15px; border: 0; border-radius: 9px; color: #fff; background: var(--blue); font-weight: 700; }
+      .primary:hover { background: #4338ca; }
+      .success-message { min-height: 20px; margin: 10px 0 0; color: var(--green); text-align: center; font-size: .8rem; }
+      .machine-status { margin-top: 23px; padding-top: 22px; border-top: 1px solid var(--line); }
+      .status-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 11px; }
+      .status-row select { max-width: 155px; }
+      .tip { margin-top: 24px; padding: 15px; border-radius: 10px; color: #4338ca; background: var(--blue-soft); font-size: .82rem; }
+      footer { padding: 25px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: .82rem; }
+      @media (max-width: 880px) { .workspace { grid-template-columns: 1fr; } .form-panel { order: -1; } }
+      @media (max-width: 680px) {
+        .shell { width: min(100% - 28px, 620px); } header { padding-bottom: 55px; }
+        .hero { display: block; padding-top: 48px; } .round-tag { display: inline-block; margin-top: 20px; }
+        .stats { grid-template-columns: repeat(2, 1fr); margin-top: -38px; }
+        .filters { grid-template-columns: 1fr 1fr; } .filters input { grid-column: 1 / -1; }
+        .question { grid-template-columns: 1fr; } .question-actions { justify-content: space-between; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="shell">
+        <nav aria-label="Primary navigation">
+          <div class="brand"><b>●</b> Weekly Interview Prep</div>
+          <a href="../">Back to home ↗</a>
+        </nav>
+        <div class="hero">
+          <div>
+            <p class="eyebrow">Frontend Machine Coding Round</p>
+            <h1>Interview Practice Tracker</h1>
+            <p>Track weekly preparation, make progress visible, and keep every question close at hand.</p>
+          </div>
+          <div class="round-tag">SECTION 4 · 2.5 HOURS</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="shell">
+      <section class="stats" aria-label="Dashboard summary">
+        <div class="stat"><span class="stat-label">Total questions</span><strong class="stat-value" id="total-count">0</strong></div>
+        <div class="stat"><span class="stat-label">Completed DSA</span><strong class="stat-value" id="dsa-count">0</strong></div>
+        <div class="stat"><span class="stat-label">Interview questions</span><strong class="stat-value" id="interview-count">0</strong></div>
+        <div class="stat"><span class="stat-label">Overall progress</span><strong class="stat-value"><span id="progress-count">0</span><small>%</small></strong><div class="progress-track"><div class="progress-bar" id="progress-bar"></div></div></div>
+      </section>
+
+      <div class="workspace">
+        <section class="panel">
+          <div class="panel-heading"><div><h2>Question tracker</h2><span class="muted" id="result-count">0 questions</span></div></div>
+          <div class="filters">
+            <input id="search" type="search" placeholder="Search questions..." aria-label="Search questions" />
+            <select id="filter-category" aria-label="Filter by category"><option value="">All categories</option><option>DSA</option><option>Git</option><option>Technical</option></select>
+            <select id="filter-status" aria-label="Filter by status"><option value="">All statuses</option><option>Pending</option><option>In Progress</option><option>Completed</option></select>
+            <select id="filter-difficulty" aria-label="Filter by difficulty"><option value="">All difficulty</option><option>Easy</option><option>Medium</option><option>Hard</option></select>
+          </div>
+          <div class="question-list" id="question-list"></div>
+        </section>
+
+        <aside class="panel form-panel">
+          <div class="panel-heading"><div><h2>Add a question</h2><span class="muted">Keep your next task specific.</span></div></div>
+          <form id="question-form" class="form-grid" novalidate>
+            <label>Question title <input id="title" name="title" placeholder="e.g. Two Sum" required maxlength="100" /><span class="error" id="title-error"></span></label>
+            <label>Category <select id="category" name="category"><option>DSA</option><option>Git</option><option>Technical</option></select></label>
+            <label>Difficulty <select id="difficulty" name="difficulty"><option>Easy</option><option>Medium</option><option>Hard</option></select></label>
+            <label>Status <select id="status" name="status"><option>Pending</option><option>In Progress</option><option>Completed</option></select></label>
+            <button class="primary" type="submit">Add question</button>
+            <div class="success-message" id="success-message" role="status" aria-live="polite"></div>
+          </form>
+          <div class="machine-status">
+            <h3>Machine coding status</h3>
+            <div class="status-row"><span class="muted">This week's build</span><select id="machine-status" aria-label="Machine coding status"><option>Not started</option><option>In progress</option><option>Submitted</option></select></div>
+          </div>
+          <div class="tip"><strong>Practice tip:</strong> explain your choices as you build. The goal is understanding, not copying.</div>
+        </aside>
+      </div>
+    </main>
+    <footer><div class="shell">Frontend Machine Coding Round · Data is saved in your browser.</div></footer>
+
+    <script>
+      const STORAGE_KEY = "weekly-interview-tracker";
+      const MACHINE_KEY = "weekly-machine-status";
+      const starterQuestions = [
+        { id: 1, title: "Two Sum", category: "DSA", difficulty: "Easy", status: "Completed" },
+        { id: 2, title: "Explain the event loop", category: "Technical", difficulty: "Medium", status: "In Progress" },
+        { id: 3, title: "Resolve a merge conflict safely", category: "Git", difficulty: "Medium", status: "Pending" }
+      ];
+      let questions = loadQuestions();
+      const $ = (id) => document.getElementById(id);
+
+      function loadQuestions() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          return Array.isArray(saved) ? saved : starterQuestions;
+        } catch (error) {
+          console.error("Could not load saved questions.", error);
+          return starterQuestions;
+        }
+      }
+      function saveQuestions() { localStorage.setItem(STORAGE_KEY, JSON.stringify(questions)); }
+      function escapeHtml(value) {
+        return value.replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[character]));
+      }
+      function render() {
+        const search = $("search").value.trim().toLowerCase();
+        const category = $("filter-category").value;
+        const status = $("filter-status").value;
+        const difficulty = $("filter-difficulty").value;
+        const visible = questions.filter((question) =>
+          question.title.toLowerCase().includes(search) &&
+          (!category || question.category === category) &&
+          (!status || question.status === status) &&
+          (!difficulty || question.difficulty === difficulty)
+        );
+        $("result-count").textContent = `${visible.length} ${visible.length === 1 ? "question" : "questions"}`;
+        $("question-list").innerHTML = visible.length ? visible.map(questionTemplate).join("") : `<div class="empty"><strong>${questions.length ? "No matching questions" : "Your tracker is empty"}</strong><span>${questions.length ? "Try changing your search or filters." : "Add your first question to start tracking."}</span></div>`;
+        updateDashboard();
+      }
+      function questionTemplate(question) {
+        const statusClass = question.status === "Completed" ? "completed" : question.status === "In Progress" ? "progress" : "";
+        return `<article class="question"><div><p class="question-title">${escapeHtml(question.title)}</p><div class="question-meta"><span class="chip category">${question.category}</span><span class="chip">${question.difficulty}</span><span class="chip ${statusClass}">${question.status}</span></div></div><div class="question-actions"><select class="status-select" data-status-id="${question.id}" aria-label="Change status for ${escapeHtml(question.title)}"><option ${question.status === "Pending" ? "selected" : ""}>Pending</option><option ${question.status === "In Progress" ? "selected" : ""}>In Progress</option><option ${question.status === "Completed" ? "selected" : ""}>Completed</option></select><button class="icon-button" type="button" data-delete-id="${question.id}" aria-label="Delete ${escapeHtml(question.title)}">×</button></div></article>`;
+      }
+      function updateDashboard() {
+        const completed = questions.filter((question) => question.status === "Completed");
+        const percentage = questions.length ? Math.round((completed.length / questions.length) * 100) : 0;
+        $("total-count").textContent = questions.length;
+        $("dsa-count").textContent = completed.filter((question) => question.category === "DSA").length;
+        $("interview-count").textContent = completed.filter((question) => question.category === "Technical" || question.category === "Git").length;
+        $("progress-count").textContent = percentage;
+        $("progress-bar").style.width = `${percentage}%`;
+      }
+      $("question-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const title = $("title").value.trim();
+        $("title-error").textContent = title ? "" : "Please enter a question title.";
+        if (!title) return;
+        questions.unshift({ id: Date.now(), title, category: $("category").value, difficulty: $("difficulty").value, status: $("status").value });
+        saveQuestions(); event.target.reset(); render();
+        $("success-message").textContent = "Question added successfully.";
+        setTimeout(() => { $("success-message").textContent = ""; }, 2500);
+      });
+      document.querySelectorAll("#search, #filter-category, #filter-status, #filter-difficulty").forEach((element) => element.addEventListener("input", render));
+      $("question-list").addEventListener("change", (event) => {
+        const id = Number(event.target.dataset.statusId);
+        if (!id) return;
+        const question = questions.find((item) => item.id === id);
+        if (question) { question.status = event.target.value; saveQuestions(); render(); }
+      });
+      $("question-list").addEventListener("click", (event) => {
+        const id = Number(event.target.dataset.deleteId);
+        if (!id) return;
+        questions = questions.filter((question) => question.id !== id);
+        saveQuestions(); render();
+      });
+      $("machine-status").value = localStorage.getItem(MACHINE_KEY) || "Not started";
+      $("machine-status").addEventListener("change", (event) => localStorage.setItem(MACHINE_KEY, event.target.value));
+      render();
+    </script>
+  </body>
+</html>

@@ -6,15 +6,12 @@ import { Icon, type IconName } from '../../shared/Icon'
 const navigation: { label: string; icon: IconName; path: string }[] = [
   { label: 'Overview', icon: 'grid', path: '/' },
   { label: 'Question tracker', icon: 'bookmark', path: '/questions' },
-  { label: 'DSA Practice', icon: 'code', path: '/questions?category=DSA' },
-  { label: 'Interview Prep', icon: 'briefcase', path: '/questions?category=Technical' },
-  { label: 'Machine Coding', icon: 'layers', path: '/questions?category=Technical&focus=machine' },
 ]
 
 export function AppLayout({ children }: { children: ReactNode }) {
   const navigate = useNavigate()
   const location = useLocation()
-  const active = location.pathname === '/' ? 'Overview' : location.search.includes('focus=machine') ? 'Machine Coding' : location.search.includes('category=DSA') ? 'DSA Practice' : location.search.includes('category=Technical') ? 'Interview Prep' : 'Question tracker'
+  const active = location.pathname === '/' ? 'Overview' : 'Question tracker'
   const [search, setSearch] = useState('')
   const submitSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -26,7 +23,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
       <div className="brand"><div className="brand-mark"><span /></div><span>Prep<span className="brand-accent">ly</span></span></div>
       <div className="workspace-label">Workspace</div>
       <nav className="main-nav" aria-label="Main navigation">
-        {navigation.map((item) => <button type="button" title={item.label} className={`nav-item nav-item-${item.label.toLowerCase().replaceAll(' ', '-')} ${active === item.label ? 'active' : ''}`} key={item.label} onClick={() => navigate(item.path)}><Icon name={item.icon} /><span className="nav-label">{item.label}</span>{item.label === 'DSA Practice' && <span className="nav-count">24</span>}</button>)}
+        {navigation.map((item) => <button type="button" title={item.label} className={`nav-item nav-item-${item.label.toLowerCase().replaceAll(' ', '-')} ${active === item.label ? 'active' : ''}`} key={item.label} onClick={() => navigate(item.path)}><Icon name={item.icon} /><span className="nav-label">{item.label}</span>{item.label === 'Question tracker' && <span className="nav-count">24</span>}</button>)}
       </nav>
       <div className="sidebar-bottom">
         <button type="button" title="Saved questions" className="nav-item" onClick={() => navigate('/questions?status=Saved')}><Icon name="bookmark" /><span className="nav-label">Saved questions</span></button>

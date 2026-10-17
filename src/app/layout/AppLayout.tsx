@@ -1,18 +1,38 @@
 import type { ReactNode } from 'react'
 import { useLocation, useNavigate } from 'react-router'
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { Icon, type IconName } from '../../shared/Icon'
 
 const navigation: { label: string; icon: IconName; path: string }[] = [
   { label: 'Overview', icon: 'grid', path: '/' },
   { label: 'Question tracker', icon: 'bookmark', path: '/questions' },
 ]
+const questionsStorageKey = 'preply-questions-v2'
 
 export function AppLayout({ children }: { children: ReactNode }) {
   const navigate = useNavigate()
   const location = useLocation()
   const active = location.pathname === '/' ? 'Overview' : 'Question tracker'
+  const [questionCount, setQuestionCount] = useState(0)
   const [search, setSearch] = useState('')
+  useEffect(() => {
+    const readQuestionCount = () => {
+      const stored = localStorage.getItem(questionsStorageKey)
+      if (!stored) {
+        setQuestionCount(0)
+        return
+      }
+      try {
+        const parsed: unknown = JSON.parse(stored)
+        setQuestionCount(Array.isArray(parsed) ? parsed.length : 0)
+      } catch {
+        setQuestionCount(0)
+      }
+    }
+    readQuestionCount()
+    window.addEventListener('storage', readQuestionCount)
+    return () => window.removeEventListener('storage', readQuestionCount)
+  }, [location.pathname])
   const submitSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     navigate(`/questions${search.trim() ? `?search=${encodeURIComponent(search.trim())}` : ''}`)
@@ -23,7 +43,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
       <div className="brand"><div className="brand-mark"><span /></div><span>Prep<span className="brand-accent">ly</span></span></div>
       <div className="workspace-label">Workspace</div>
       <nav className="main-nav" aria-label="Main navigation">
-        {navigation.map((item) => <button type="button" title={item.label} className={`nav-item nav-item-${item.label.toLowerCase().replaceAll(' ', '-')} ${active === item.label ? 'active' : ''}`} key={item.label} onClick={() => navigate(item.path)}><Icon name={item.icon} /><span className="nav-label">{item.label}</span>{item.label === 'Question tracker' && <span className="nav-count">24</span>}</button>)}
+        {navigation.map((item) => <button type="button" title={item.label} className={`nav-item nav-item-${item.label.toLowerCase().replaceAll(' ', '-')} ${active === item.label ? 'active' : ''}`} key={item.label} onClick={() => navigate(item.path)}><Icon name={item.icon} /><span className="nav-label">{item.label}</span>{item.label === 'Question tracker' && <span className="nav-count">{questionCount}</span>}</button>)}
       </nav>
       <div className="sidebar-bottom">
         <button type="button" title="Saved questions" className="nav-item" onClick={() => navigate('/questions?status=Saved')}><Icon name="bookmark" /><span className="nav-label">Saved questions</span></button>
